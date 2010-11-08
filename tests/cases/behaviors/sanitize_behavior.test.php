@@ -52,6 +52,30 @@ class SanitizeBehaviorTestCase extends CakeTestCase {
 		ClassRegistry::flush();
 	}
 
+	function testSanitizeDecode() {
+		$this->Clean->Behaviors->Sanitize->settings['Clean']['decodeHtml'] = true;
+		$this->Clean->sanitize = array(
+			'name' => 'html'
+		);
+		
+		$data = array(
+			'name' => '<b>Html!</b>'
+		);
+		$this->Clean->create();
+		$this->assertTrue($this->Clean->save($data));
+
+		$result = $this->Clean->read();
+		$expected = array(
+			'Clean' => array(
+				'id' => 1,
+				'name' => '<b>Html!</b>',
+				'description' => null,
+				'multi_clean_id' => null
+			)
+		);
+		$this->assertEqual($result, $expected);
+	}
+
 	function testExitEarly() {
 		$this->Clean->Behaviors->Sanitize->settings['Clean']['validate'] = 'before';
 		$data = array(
@@ -110,7 +134,8 @@ class SanitizeBehaviorTestCase extends CakeTestCase {
 		$result = $this->Clean->Behaviors->Sanitize->settings;
 		$expected = array(
 			'Clean' => array(
-				'validate' => 'after'
+				'validate' => 'after',
+				'decodeHtml' => false
 			)
 		);
 		$this->assertEqual($result, $expected);

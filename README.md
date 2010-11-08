@@ -47,6 +47,18 @@ the behavior to your AppModel but have special case models.
     // sanitize nothing on this model
     var $sanitize = false;
 
+You can also choose to decode HTML after a find is performed on a model. This is
+useful if you're going to display the text and wish the HTML to be rendered
+properly. On the flip side, keeping auto-decoding off is useful for passing the
+data to something like XML. By default, auto-decoding is `false`. To turn it on,
+use:
+
+    var $actsAs = array(
+        'Sanitizer.Sanitize' => array(
+            'decodeHtml' => true
+        )
+    );
+
 Sanitization methods supported:
 * clean
 * html

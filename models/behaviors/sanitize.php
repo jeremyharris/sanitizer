@@ -2,8 +2,8 @@
 /**
  * Sanitize behavior class
  *
- * @copyright     Copyright 2010, *ROCK*HARBOR
- * @link          http://rockharbor.org *ROCK*HARBOR
+ * @copyright     Copyright 2010, Jeremy Harris
+ * @link          http://42pixels.com
  * @package       sanitizer
  * @subpackage    sanitizer.models.behaviors
  */
@@ -78,7 +78,10 @@ class SanitizeBehavior extends ModelBehavior {
  */
 	function setup(&$Model, $settings = array()) {
 		if (!isset($this->settings[$Model->alias])) {
-			$this->settings[$Model->alias] = array('validate' => 'after');
+			$this->settings[$Model->alias] = array(
+				'validate' => 'after',
+				'decodeHtml' => false
+			);
 		}
 		if (!is_array($settings)) {
 			$settings = array();
@@ -115,6 +118,34 @@ class SanitizeBehavior extends ModelBehavior {
 	}
 
 /**
+ * Decodes HTML entities if the behavior option 'decodeHtml' is `true`
+ *
+ * @param Model $Model The calling model
+ * @param array $results Results passed by find
+ * @return array Results
+ */
+	function afterFind($Model, $results, $primary) {
+		if ($this->settings[$Model->alias]['decodeHtml'] && !empty($results)) {
+			if ($primary) {
+				foreach ($results as $result) {
+					foreach ($result as $associatedModel => &$fields) {
+						if ($associatedModel == $Model->alias) {
+							$fields = $this->_decode($Model, $fields);
+						} elseif (in_array($associatedModel, array_keys($Model->getAssociated()))) {
+							if ($Model->{$associatedModel}->Behaviors->attached('Sanitize')) {
+								$fields = $this->_decode($Model->{$associatedModel}, $fields);
+							}
+						}
+					}
+				}
+			} else {
+				$results = $this->_decode($Model, $results);
+			}
+		}
+		return $results;
+	}
+
+/**
  * Sanitizes data. By default, uses `Sanitize::clean()` and removes html. Define
  * custom sanitization rules on a per-field basis using the `$sanitize` var
  * within the model
@@ -147,9 +178,39 @@ class SanitizeBehavior extends ModelBehavior {
 					'remove_html' => true
 				));
 			}
-		}		
+		}
 	}
 
+/**
+ * Decodes a model's data if sanitize was told to encode them
+ *
+ * @param Model $Model The calling model
+ * @param array $result The model result to decode
+ * @return array Decoded results
+ */
+	function _decode($Model, $result) {
+		$sanitize = isset($Model->sanitize) ? $Model->sanitize : array();
+		if ($sanitize === false) {
+			return;
+		}
+		foreach ($result[$Model->alias] as $field => &$value) {
+			$method = null;
+			if (isset($sanitize[$field])) {
+				$method = $sanitize[$field];
+				if (is_array($sanitize[$field])) {
+					$method = key($sanitize[$field]);
+					$options = array($sanitize[$field][$method]);
+				}
+			}
+			if ($method === false) {
+				continue;
+			}
+			if (is_null($method) || $method == 'html') {
+				$value = html_entity_decode(html_entity_decode($value, ENT_QUOTES), ENT_QUOTES);
+			}
+		}
+		return $result;
+	}
 }
 
 ?>

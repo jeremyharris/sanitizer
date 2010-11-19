@@ -2,10 +2,14 @@
 /**
  * Sanitize behavior class
  *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
  * @copyright     Copyright 2010, Jeremy Harris
  * @link          http://42pixels.com
  * @package       sanitizer
  * @subpackage    sanitizer.models.behaviors
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
 /**

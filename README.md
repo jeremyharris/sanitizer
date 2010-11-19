@@ -91,4 +91,11 @@ See the test cases for code samples.
 * Add ability to customize default method
 * Allow using methods outside of Cake's Sanitize class
 
+## License
+
+Licensed under The MIT License
+[http://www.opensource.org/licenses/mit-license.php][2]
+Redistributions of files must retain the above copyright notice.
+
 [1]: http://api13.cakephp.org/class/sanitize
+[2]: http://www.opensource.org/licenses/mit-license.php

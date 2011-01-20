@@ -129,21 +129,13 @@ class SanitizeBehavior extends ModelBehavior {
  * @return array Results
  */
 	function afterFind($Model, $results, $primary) {
-		if ($this->settings[$Model->alias]['decodeHtml'] && !empty($results)) {
-			if ($primary) {
-				foreach ($results as $result) {
-					foreach ($result as $associatedModel => &$fields) {
-						if ($associatedModel == $Model->alias) {
-							$fields = $this->_decode($Model, $fields);
-						} elseif (in_array($associatedModel, array_keys($Model->getAssociated()))) {
-							if ($Model->{$associatedModel}->Behaviors->attached('Sanitize')) {
-								$fields = $this->_decode($Model->{$associatedModel}, $fields);
-							}
-						}
-					}
+		if ($this->settings[$Model->alias]['decodeHtml'] && !empty($results)) {			
+			foreach ($results as &$result) {
+				if ($primary) {
+					$result[$Model->alias] = $this->_decode($Model, $result[$Model->alias]);
+				} else {
+					$result = $this->_decode($Model, $result);
 				}
-			} else {
-				$results = $this->_decode($Model, $results);
 			}
 		}
 		return $results;
@@ -197,7 +189,7 @@ class SanitizeBehavior extends ModelBehavior {
 		if ($sanitize === false) {
 			return;
 		}
-		foreach ($result[$Model->alias] as $field => &$value) {
+		foreach ($result as $field => &$value) {
 			$method = null;
 			if (isset($sanitize[$field])) {
 				$method = $sanitize[$field];

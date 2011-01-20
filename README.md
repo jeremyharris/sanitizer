@@ -59,6 +59,9 @@ use:
         )
     );
 
+*Note:* Auto-decoding only works on the model the find is performed on. Trickling
+down other related models and contained models proved too tricky to do.
+
 Sanitization methods supported:
 * clean
 * html
@@ -90,6 +93,7 @@ See the test cases for code samples.
 
 * Add ability to customize default method
 * Allow using methods outside of Cake's Sanitize class
+* *Perhaps* trickle afterFind down to related/contained models
 
 ## License
 

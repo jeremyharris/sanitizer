@@ -47,21 +47,6 @@ the behavior to your AppModel but have special case models.
     // sanitize nothing on this model
     var $sanitize = false;
 
-You can also choose to decode HTML after a find is performed on a model. This is
-useful if you're going to display the text and wish the HTML to be rendered
-properly. On the flip side, keeping auto-decoding off is useful for passing the
-data to something like XML. By default, auto-decoding is `false`. To turn it on,
-use:
-
-    var $actsAs = array(
-        'Sanitizer.Sanitize' => array(
-            'decodeHtml' => true
-        )
-    );
-
-*Note:* Auto-decoding only works on the model the find is performed on. Trickling
-down other related models and contained models proved too tricky to do.
-
 Sanitization methods supported:
 * clean
 * html
@@ -88,12 +73,14 @@ See the test cases for code samples.
 
 * If you upload files, the Sanitize behavior will by default sanitize and escape
   the file path. Make sure to set `'file' => false` in your `$sanitize` var!
+* Auto-decoding was removed on the master branch. You can find it in the
+  `decode` branch. It didn't work well in a real world application, with find('count')
+  and the like generating errors.
 
 ## Future plans
 
 * Add ability to customize default method
 * Allow using methods outside of Cake's Sanitize class
-* *Perhaps* trickle afterFind down to related/contained models
 
 ## License
 

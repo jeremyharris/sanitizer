@@ -122,26 +122,6 @@ class SanitizeBehavior extends ModelBehavior {
 	}
 
 /**
- * Decodes HTML entities if the behavior option 'decodeHtml' is `true`
- *
- * @param Model $Model The calling model
- * @param array $results Results passed by find
- * @return array Results
- */
-	function afterFind($Model, $results, $primary) {
-		if ($this->settings[$Model->alias]['decodeHtml'] && !empty($results)) {			
-			foreach ($results as &$result) {
-				if ($primary || isset($result[$Model->alias])) {
-					$result[$Model->alias] = $this->_decode($Model, $result[$Model->alias]);
-				} else {
-					$result = $this->_decode($Model, $result);
-				}
-			}
-		}
-		return $results;
-	}
-
-/**
  * Sanitizes data. By default, uses `Sanitize::clean()` and removes html. Define
  * custom sanitization rules on a per-field basis using the `$sanitize` var
  * within the model
@@ -175,37 +155,6 @@ class SanitizeBehavior extends ModelBehavior {
 				));
 			}
 		}
-	}
-
-/**
- * Decodes a model's data if sanitize was told to encode them
- *
- * @param Model $Model The calling model
- * @param array $result The model result to decode
- * @return array Decoded results
- */
-	function _decode($Model, $result) {
-		$sanitize = isset($Model->sanitize) ? $Model->sanitize : array();
-		if ($sanitize === false) {
-			return;
-		}
-		foreach ($result as $field => &$value) {
-			$method = null;
-			if (isset($sanitize[$field])) {
-				$method = $sanitize[$field];
-				if (is_array($sanitize[$field])) {
-					$method = key($sanitize[$field]);
-					$options = array($sanitize[$field][$method]);
-				}
-			}
-			if ($method === false) {
-				continue;
-			}
-			if (is_null($method) || $method == 'html') {
-				$value = html_entity_decode(html_entity_decode($value, ENT_QUOTES), ENT_QUOTES);
-			}
-		}
-		return $result;
 	}
 }
 

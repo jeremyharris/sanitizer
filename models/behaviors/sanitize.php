@@ -131,7 +131,7 @@ class SanitizeBehavior extends ModelBehavior {
 	function afterFind($Model, $results, $primary) {
 		if ($this->settings[$Model->alias]['decodeHtml'] && !empty($results)) {			
 			foreach ($results as &$result) {
-				if ($primary) {
+				if ($primary || isset($result[$Model->alias])) {
 					$result[$Model->alias] = $this->_decode($Model, $result[$Model->alias]);
 				} else {
 					$result = $this->_decode($Model, $result);

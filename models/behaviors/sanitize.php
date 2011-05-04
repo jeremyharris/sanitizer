@@ -70,7 +70,7 @@ class SanitizeBehavior extends ModelBehavior {
 		'paranoid',
 		'stripAll',
 		'stripImages',
-		'stropScripts',
+		'stripScripts',
 		'stripWhitespace',
 	);
 

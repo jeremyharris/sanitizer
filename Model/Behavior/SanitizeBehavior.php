@@ -15,7 +15,7 @@
 /**
  * Includes
  */
-App::import('Core', 'Sanitize');
+App::uses('Sanitize', 'Utility');
 
 /**
  * Sanitize behavior

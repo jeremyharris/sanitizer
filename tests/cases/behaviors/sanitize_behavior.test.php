@@ -8,7 +8,18 @@ class Clean extends CakeTestModel {
 		'Sanitizer.Sanitize'
 	);
 
-	var $sanitize = null;
+	var $sanitize = array(
+		'name' => array(
+			'clean' => array(
+				'remove_html' => true
+			)
+		),
+		'description' => array(
+			'clean' => array(
+				'remove_html' => true
+			)
+		)
+	);
 
 	var $validate = array(
 		'name' => array(
@@ -32,7 +43,13 @@ class MultiClean extends CakeTestModel {
 		'Sanitizer.Sanitize'
 	);
 
-	var $sanitize = null;
+	var $sanitize = array(
+		'name' => array(
+			'clean' => array(
+				'remove_html' => true
+			)
+		)
+	);
 
 	var $hasMany = array(
 		'Clean'
@@ -118,9 +135,7 @@ class SanitizeBehaviorTestCase extends CakeTestCase {
 	}
 
 	function testSkipSanitizeField() {
-		$this->Clean->sanitize = array(
-			'name' => false,
-		);
+		$this->Clean->sanitize['name'] = false;
 
 		$data = array(
 			'name' => '<b>Html!</b>',
@@ -307,7 +322,18 @@ class SanitizeBehaviorTestCase extends CakeTestCase {
 			'name' => '<b>'
 		);
 		$this->Clean->create();
-		$this->assertFalse($this->Clean->save($data));
+		$results = $this->Clean->save($data);
+		
+		$result = $this->Clean->read();
+		$expected = array(
+			'Clean' => array(
+				'id' => 2,
+				'name' => '<b>',
+				'description' => null,
+				'multi_clean_id' => null
+			)
+		);
+		$this->assertEqual($result, $expected);
 	}
 
 	function testSanitizeAfterValidation() {

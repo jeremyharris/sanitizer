@@ -20,11 +20,10 @@ App::uses('Sanitize', 'Utility');
 /**
  * Sanitize behavior
  *
- * Sanitizes inputs automatically before saving them to the database. By default,
- * uses Sanitize::clean() and strips html. To use a different method on the
- * Sanitize class, set the $sanitize var with the key as the field name and the
- * value the method. Optionally pass an array with the options that you would
- * normally pass to Sanitize.
+ * Sanitizes inputs automatically before saving them to the database. To use a 
+ * different method on the Sanitize class, set the $sanitize var with the key as 
+ * the field name and the value the method. Optionally pass an array with the 
+ * options that you would normally pass to Sanitize.
  *
  * {{{
  * // clean the name field using Sanitize::html()
@@ -130,9 +129,6 @@ class SanitizeBehavior extends ModelBehavior {
  */
 	function _sanitize($Model) {
 		$sanitize = isset($Model->sanitize) ? $Model->sanitize : array();
-		if ($sanitize === false) {
-			return;
-		}
 		foreach ($Model->data[$Model->alias] as $field => &$value) {
 			$method = null;
 			if (isset($sanitize[$field])) {
@@ -142,17 +138,10 @@ class SanitizeBehavior extends ModelBehavior {
 					$options = array($sanitize[$field][$method]);
 				}
 			}
-			if ($method === false) {
-				continue;
-			}
 			if (in_array($method, $this->_methods)) {
 				$args = isset($options) ? $options : array();
 				array_unshift($args, $value);
 				$value = call_user_func_array(array('Sanitize', $method), $args);
-			} else {
-				$value = Sanitize::clean($value, array(
-					'remove_html' => true
-				));
 			}
 		}
 	}
